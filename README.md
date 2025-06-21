@@ -1,4 +1,4 @@
 # XUtils
 
 ## Redis相关
-- redisson实现延迟队列
+- redisson各场景使用
