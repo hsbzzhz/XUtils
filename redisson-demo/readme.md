@@ -19,3 +19,27 @@
 - 用setnx命令原子加锁，同时设置过期时间
 - 获取库存，用Atomic属性方法实现原子递减扣库存
 - 扣除成功释放锁，先判断是否为当前线程持有然后再释放（lua脚本实现原子操作）
+
+## TCC实现订单提交和库存扣减
+
+### 原理
+try： 预留资源
+confirm：提交资源
+cancel：回滚资源
+### 实现流程
+flowchart TD
+A[下单请求\n(Order Request)] --> B{启动全局事务\n(Global TCC Transaction)}
+B --> C[调用 InventoryTCC.deductInventory\nTry阶段: 冻结库存]
+C --> D{冻结成功？}
+D -- 否 --> E[Cancel Phase: 库存回滚]
+E --> F[事务失败\n返回错误]
+D -- 是 --> G[调用 OrderTCC.createOrder\nTry阶段: 预创建订单]
+G --> H{预创建成功？}
+H -- 否 --> I[Cancel Phase: 订单回滚]
+I --> J[Cancel Phase: 库存释放]
+J --> K[事务失败\n返回错误]
+H -- 是 --> L[发起 Confirm 阶段\n提交库存与订单]
+L --> M[Confirm: 库存扣减]
+L --> N[Confirm: 订单生效]
+M --> O[事务成功\n返回订单信息]
+N --> O
