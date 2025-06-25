@@ -1,17 +1,13 @@
-package com.haisum.redissondemo;
-
+package com.haisum.dbdemo;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.List;
-
 @SpringBootTest
-class TccTransactionTest {
+class TCCDemoTests {
 
     @Test
-    void orderTransaction() {
-
-
+    void contextLoads() {
     }
+
 }
